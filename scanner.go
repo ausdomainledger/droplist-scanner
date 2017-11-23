@@ -17,9 +17,7 @@ import (
 )
 
 const (
-	maxRetries    = 360
-	retryInterval = time.Hour
-	droplistURL   = "https://ausregistry.com.au/official-domain-name-drop-list/"
+	droplistURL = "https://ausregistry.com.au/official-domain-name-drop-list/"
 )
 
 var (
@@ -47,7 +45,7 @@ func main() {
 	for {
 		crawl()
 
-		time.Sleep(time.Hour)
+		time.Sleep(5 * time.Minute)
 	}
 
 }
@@ -84,7 +82,7 @@ func submitNames(domains map[string]struct{}) {
 			log.Printf("Couldn't determine etld for %s: %v", name, err)
 		}
 
-		if _, err := db.Exec(`INSERT INTO domains (domain, first_seen, last_seen, etld) VALUES ($1, $2, $2, $3) ON CONFLICT (domain) DO UPDATE SET last_seen = GREATEST($2,domains.first_seen), first_seen = LEAST(domains.first_seen, $2);`,
+		if _, err := db.Exec(`INSERT INTO domains (domain, first_seen, last_seen, etld) VALUES ($1, $2, $2, $3) ON CONFLICT (domain) DO NOTHING;`,
 			name, now, etld); err != nil {
 			log.Printf("Failed to insert/update %s: %v", name, err)
 		}
