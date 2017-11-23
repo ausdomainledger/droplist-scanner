@@ -75,7 +75,7 @@ func crawl() {
 }
 
 func submitNames(domains map[string]struct{}) {
-	now := time.Now().Unix()
+	now := time.Now().AddDate(-2, 0, 0).Unix() // -2 years since its dropping
 	for name := range domains {
 		etld, err := publicsuffix.EffectiveTLDPlusOne(name)
 		if err != nil {
